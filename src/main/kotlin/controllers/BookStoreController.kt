@@ -1,12 +1,13 @@
 package controllers
 
-import models.BookModel
+import data.repositories.BookRepository
 
 /**
  * You can add book and display book by using this class
  */
-class BookStoreController {
-    private val bookList = mutableListOf<BookModel>()
+class BookStoreController(
+    private val repository: BookRepository
+) {
 
     /**
      * Purpose - Add new book to the bookstore
@@ -19,32 +20,22 @@ class BookStoreController {
         authorName: String,
         publishedYear: Int
     ) {
-        bookList.add(
-            BookModel(
-                id = generateBookId(),
-                bookName = bookName,
-                authorName = authorName,
-                publishedYear = publishedYear
-            )
+        repository.addBook(
+            bookName = bookName,
+            authorName = authorName,
+            publishedYear = publishedYear
         )
     }
 
     /**
      * Purpose - display book list
      */
-    fun displayBooks(){
-       if(bookList.isEmpty()) {
-           println("No book in our store")
-       } else {
-           bookList.forEach{ println(it) }
-       }
+    fun displayBooks() {
+        val bookList = repository.fetchBooks()
+        if (bookList.isEmpty()) {
+            println("No book in our store")
+        } else {
+            bookList.forEach { println(it) }
+        }
     }
-
-    /**
-     * Purpose - auto generate ID of the book depending on book list
-     * @return - unique ID of the book
-     */
-    private fun generateBookId() = bookList.lastOrNull()?.let {
-        it.id + 1
-    } ?: 1
 }
